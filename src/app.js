@@ -7,7 +7,7 @@ import SnakeContainer from './game';
 const boardParams = {
   width: 20,
   height: 20,
-  delay: 100,
+  delay: 300,
 };
 
 ReactDOM.render(

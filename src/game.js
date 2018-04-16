@@ -1,4 +1,5 @@
 "use strict";
+
 import React from 'react';
 import Board from "./components/board";
 import { Snake } from './snake';
@@ -12,30 +13,51 @@ export default class SnakeContainer extends React.Component
       width: props.width,
       height: props.height,
       delay: props.delay,
-      board: []
+      board: [],
+      moveInterval: null,
+      currentDirection: null
     };
+    this.moveSet = {
+      left: () => this.handleMove(Snake.head.position.row, Snake.head.position.column - 1),
+      up: () => this.handleMove(Snake.head.position.row - 1, Snake.head.position.column),
+      right: () => this.handleMove(Snake.head.position.row, Snake.head.position.column + 1),
+      down: () => this.handleMove(Snake.head.position.row + 1, Snake.head.position.column)
+    }
   }
 
   componentDidMount() {
     this.buildBoard();
 
-    const moveSet = {
-      37: () => this.handleMove(Snake.head.position.row, Snake.head.position.column - 1),
-      38: () => this.handleMove(Snake.head.position.row - 1, Snake.head.position.column),
-      39: () => this.handleMove(Snake.head.position.row, Snake.head.position.column + 1),
-      40: () => this.handleMove(Snake.head.position.row + 1, Snake.head.position.column)
+    const keyHash = {
+      37: 'left',
+      38: 'up',
+      39: 'right',
+      40: 'down'
     };
 
+    const validMoves = {
+      left: ['down', 'up'],
+      up: ['left', 'right'],
+      right: ['down', 'up'],
+      down: ['left', 'right']
+    };
+
+    // todo: ignore moving backwards    
     document.onkeydown = (e) => {
-      if([37,38,39,40].includes(e.keyCode)) {        
-        moveSet[e.keyCode]();
+      if(validMoves[this.state.currentDirection].includes(keyHash[e.keyCode])) {
+        this.state.currentDirection = keyHash[e.keyCode];
       }
     };
   }
 
   handleMove(row, column) {
-    this.setSnakeHead(this.state.board, row, column);
-    this.setState({ board: this.state.board });
+    if(row < 0 || column < 0 || row >= this.state.height || column >= this.state.width) {
+      alert('crashed!');
+      this.resetGame();      
+    } else {
+      this.setSnakeHead(this.state.board, row, column);
+      this.setState({ board: this.state.board });
+    }    
   }
 
   buildBoard() {
@@ -59,10 +81,24 @@ export default class SnakeContainer extends React.Component
     board[row][column].occupant = Snake.head;
     Snake.head.position = { row, column };
   }
-  
+
+  resetGame() {
+    this.buildBoard();
+    // todo: randomize food, reset score etc
+    clearInterval(this.state.moveInterval);
+  }
+
+  startGame() {
+    this.state.currentDirection = 'right';
+    this.state.moveInterval = setInterval(() => {
+      this.moveSet[this.state.currentDirection]()
+    }, this.state.delay);
+  }
+
   render() {    
-    return (
+    return (      
       <div>
+        <button onClick={this.startGame.bind(this)}>Start</button>
         <Board board={this.state.board} />
       </div>
     );
