@@ -4,7 +4,12 @@
 
 const head = {
   previous: null,
-  next: tail
+  // next: tail
+  next: null,
+  position: {
+    row: null,
+    column: null
+  }
 };
 
 const tail = {
