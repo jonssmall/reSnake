@@ -7,15 +7,14 @@ export default function Row(props) {
   };  
   const cells = props.row.map((c,i) => {
     const cellProps = {
-      style: {
-        border: "1px solid black",      
+      style: {        
         display: "inline-block",
         height: "20px",
         width: "20px",
         margin: '1px',
         backgroundColor: c.occupant ? "#175118" : "#cecece"
       },
-      key: i      
+      key: i
     };
     return <div {...cellProps}></div>;
   });

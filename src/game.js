@@ -2,6 +2,7 @@
 import React from 'react';
 import Board from "./components/board";
 import { Snake } from './snake';
+import { moveHandler } from './moves';
 
 export default class SnakeContainer extends React.Component
 {
@@ -16,7 +17,27 @@ export default class SnakeContainer extends React.Component
   }
 
   componentDidMount() {
-    this.buildBoard();
+    this.buildBoard();    
+    document.onkeydown = (e) => {
+      switch (e.keyCode) {
+        case 37:
+          this.setSnakeHead(this.state.board, Snake.head.position.row, --Snake.head.position.column);
+          this.setState({ board: this.state.board });
+          break;
+        case 38:
+          this.setSnakeHead(this.state.board, --Snake.head.position.row, Snake.head.position.column);
+          this.setState({ board: this.state.board });
+          break;
+        case 39:
+          this.setSnakeHead(this.state.board, Snake.head.position.row, ++Snake.head.position.column);
+          this.setState({ board: this.state.board });
+          break;
+        case 40:
+          this.setSnakeHead(this.state.board, ++Snake.head.position.row, Snake.head.position.column);
+          this.setState({ board: this.state.board });
+          break;
+      }
+    };
   }
 
   buildBoard() {
@@ -31,13 +52,12 @@ export default class SnakeContainer extends React.Component
     });
   }
 
-  setSnakeHead(board, row = 0, column = 0) {   
-    debugger; 
-    board[row][column].occupant = Snake.head;    
-  }  
+  setSnakeHead(board, row = 0, column = 0) {       
+    board[row][column].occupant = Snake.head;
+    Snake.head.position = { row, column };
+  }
   
-  render() {
-    console.log(this.state.board);
+  render() {    
     return (
       <div>
         <Board board={this.state.board} />
