@@ -1,41 +1,47 @@
-const grid = {
-  rows: 10,
-  columns: 10
-};
+"use strict";
+import React from 'react';
+import Board from "./components/board";
+import { Snake } from './snake';
 
-const snake = {
-  headPosition: {
-    row: 0,
-    column: 9
-  },
-  moveRight() {
-    if (++this.headPosition.column >= grid.columns) {
-      console.log('CRASHED!');
-    } else {
-      drawBoard();
-    }
+export default class SnakeContainer extends React.Component
+{
+  constructor(props) {
+    super(props);
+    this.state = {
+      width: props.width,
+      height: props.height,
+      delay: props.delay,
+      board: []
+    };
   }
-};
 
-const board = makeBoard(grid);
+  componentDidMount() {
+    this.buildBoard();
+  }
 
-function makeBoard(grid) {
-  return [...Array(grid.rows).keys()].map(r => {
-    return [...Array(grid.columns).keys()].fill('O');
-  });
+  buildBoard() {
+    const board = [...Array(this.state.height)].map((_, i) => this.buildRow());
+    this.setSnakeHead(board);
+    this.setState({ board });
+  }
+
+  buildRow() {    
+    return [...Array(this.state.width)].map((_, i) => {
+      return { occupant: false }
+    });
+  }
+
+  setSnakeHead(board, row = 0, column = 0) {   
+    debugger; 
+    board[row][column].occupant = Snake.head;    
+  }  
+  
+  render() {
+    console.log(this.state.board);
+    return (
+      <div>
+        <Board board={this.state.board} />
+      </div>
+    );
+  }
 }
-
-function drawBoard() {
-  board.forEach(r => {
-    r.fill('O');
-  });
-  board[snake.headPosition.row][snake.headPosition.column] = 'X';
-}
-
-snake.moveRight();
-// snake.moveRight();
-// snake.moveRight();
-// snake.moveRight();
-
-drawBoard();
-console.log(board);
