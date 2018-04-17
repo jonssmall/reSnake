@@ -58,23 +58,26 @@ export default class SnakeContainer extends React.Component
   }
 
   handleMove(row, column) {
-    if(row < 0 || column < 0 || row >= this.state.height || column >= this.state.width) {
+    if (row < 0 || column < 0 || row >= this.state.height || column >= this.state.width) {
       alert('crashed!');
       this.resetGame();
       // todo: this can be easier to read.      
-    } else if(this.state.board[row][column].occupant && this.state.board[row][column].occupant.food) {      
+    } else if (this.state.board[row][column].occupant && this.state.board[row][column].occupant.food) {      
       // todo: abstract to function
       const newHead = {
-        tail: Snake.head,
+        next: Snake.head,
         position: {
           row,
           column
         }
-      };
+      };      
       Snake.head = newHead;
       const board = this.state.board;
       this.placeFood(board);
       this.setState({ board });
+    } else if (this.state.board[row][column].occupant) {
+      alert('crashed!');
+      this.resetGame();
     } else {
       this.setSnake(this.state.board, Snake.head, { row, column });
       this.setState({ board: this.state.board });
@@ -108,6 +111,7 @@ export default class SnakeContainer extends React.Component
     this.buildBoard();
     // todo: randomize food, reset score etc
     clearInterval(this.state.moveInterval);
+    this.setState({ moveInterval: null });
   }
 
   // todo: disable start button to prevent double interval
@@ -128,7 +132,7 @@ export default class SnakeContainer extends React.Component
   render() {    
     return (      
       <div>
-        <button onClick={this.startGame.bind(this)}>Start</button>
+        <button disabled={this.state.moveInterval} onClick={this.startGame.bind(this)}>Start</button>
         <Board board={this.state.board} />
       </div>
     );
