@@ -16,13 +16,8 @@ export default class SnakeContainer extends React.Component
       board: [],
       moveInterval: null,
       currentDirection: 'right',
-      food: {
-        food: true,
-        position: {
-          row: 5,
-          column: 5
-        }
-      }
+      score: 0,
+      highScore: 0  
     };
     this.moveSet = {
       left: () => this.handleMove(Snake.head.position.row, Snake.head.position.column - 1),
@@ -74,7 +69,7 @@ export default class SnakeContainer extends React.Component
       Snake.head = newHead;
       const board = this.state.board;
       this.placeFood(board);
-      this.setState({ board });
+      this.setState({ board, score: ++this.state.score });
     } else if (this.state.board[row][column].occupant) {
       alert('crashed!');
       this.resetGame();
@@ -111,7 +106,7 @@ export default class SnakeContainer extends React.Component
     this.buildBoard();
     // todo: randomize food, reset score etc
     clearInterval(this.state.moveInterval);
-    this.setState({ moveInterval: null });
+    this.setState({ moveInterval: null, score: 0 });
   }
 
   // todo: disable start button to prevent double interval
@@ -133,6 +128,8 @@ export default class SnakeContainer extends React.Component
     return (      
       <div>
         <button disabled={this.state.moveInterval} onClick={this.startGame.bind(this)}>Start</button>
+        <span>Score: {this.state.score}......</span>
+        <span>Hi Score: {this.state.highScore}</span>
         <Board board={this.state.board} />
       </div>
     );

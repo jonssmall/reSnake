@@ -15,8 +15,8 @@ export default function Row(props) {
     const cellProps = {
       style: {        
         display: "inline-block",
-        height: "20px",
-        width: "20px",
+        height: "30px",
+        width: "30px",
         margin: '1px',
         backgroundColor
       },
