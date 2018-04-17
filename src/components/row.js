@@ -6,16 +6,23 @@ export default function Row(props) {
     className: "row"
   };  
   const cells = props.row.map((c,i) => {
+    let backgroundColor;
+    if (c.occupant) {
+      backgroundColor = c.occupant.food ? 'red' : '#175118';    
+    } else {
+      backgroundColor = '#cecece';
+    }
     const cellProps = {
       style: {        
         display: "inline-block",
         height: "20px",
         width: "20px",
         margin: '1px',
-        backgroundColor: c.occupant ? "#175118" : "#cecece"
+        backgroundColor
       },
       key: i
     };
+    
     return <div {...cellProps}></div>;
   });
   return (

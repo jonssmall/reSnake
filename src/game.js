@@ -15,7 +15,14 @@ export default class SnakeContainer extends React.Component
       delay: props.delay,
       board: [],
       moveInterval: null,
-      currentDirection: 'right'
+      currentDirection: 'right',
+      food: {
+        food: true,
+        position: {
+          row: 5,
+          column: 5
+        }
+      }
     };
     this.moveSet = {
       left: () => this.handleMove(Snake.head.position.row, Snake.head.position.column - 1),
@@ -61,7 +68,8 @@ export default class SnakeContainer extends React.Component
   }
 
   buildBoard() {
-    const board = [...Array(this.state.height)].map((_, i) => this.buildRow());
+    const board = [...Array(this.state.height)].map((_, i) => this.buildRow());        
+    this.placeFood(board);
     this.setSnake(board, Snake.head, { row: 2, column: 3 });
     this.setState({ board });
   }
@@ -94,6 +102,13 @@ export default class SnakeContainer extends React.Component
     this.state.moveInterval = setInterval(() => {
       this.moveSet[this.state.currentDirection]()
     }, this.state.delay);
+  }
+
+  // randomly drop food on a cell where the snake is not.
+  placeFood(board) {    
+    const cells = board.reduce((acc, row) => [...acc, ...row], []);
+    const unoccupied = cells.filter(c => !c.occupant);
+    unoccupied[Math.floor(Math.random()*unoccupied.length)].occupant = {food: true};
   }
 
   render() {    
