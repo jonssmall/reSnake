@@ -17,7 +17,7 @@ export default class SnakeContainer extends React.Component
       moveInterval: null,
       currentDirection: 'right',
       score: 0,
-      highScore: 0  
+      highScore: localStorage.getItem('highScore') || 0
     };
     this.moveSet = {
       left: () => this.handleMove(Snake.head.position.row, Snake.head.position.column - 1),
@@ -53,11 +53,12 @@ export default class SnakeContainer extends React.Component
   }
 
   handleMove(row, column) {
+    const board = this.state.board;
     if (row < 0 || column < 0 || row >= this.state.height || column >= this.state.width) {
       alert('crashed!');
       this.resetGame();
       // todo: this can be easier to read.      
-    } else if (this.state.board[row][column].occupant && this.state.board[row][column].occupant.food) {      
+    } else if (board[row][column].occupant && board[row][column].occupant.food) {      
       // todo: abstract to function
       const newHead = {
         next: Snake.head,
@@ -67,15 +68,16 @@ export default class SnakeContainer extends React.Component
         }
       };      
       Snake.head = newHead;
-      const board = this.state.board;
+      
+      this.setSnake(board, Snake.head, { row, column });
       this.placeFood(board);
       this.setState({ board, score: ++this.state.score });
-    } else if (this.state.board[row][column].occupant) {
+    } else if (board[row][column].occupant) {
       alert('crashed!');
       this.resetGame();
     } else {
-      this.setSnake(this.state.board, Snake.head, { row, column });
-      this.setState({ board: this.state.board });
+      this.setSnake(board, Snake.head, { row, column });
+      this.setState({ board });
     }
   }
 
@@ -105,8 +107,12 @@ export default class SnakeContainer extends React.Component
     Snake.resetSnake();
     this.buildBoard();
     // todo: randomize food, reset score etc
-    clearInterval(this.state.moveInterval);
-    this.setState({ moveInterval: null, score: 0 });
+    clearInterval(this.state.moveInterval);    
+    if (this.state.score > this.state.highScore) {
+      this.setState({ highScore: this.state.score });
+      localStorage.setItem('highScore', this.state.score);
+    }
+    this.setState({ moveInterval: null, score: 0 });    
   }
 
   // todo: disable start button to prevent double interval

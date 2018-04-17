@@ -1,4 +1,1 @@
-1. weird lag on eat
-2. high score counter w/ localStorage
-3. current score counter visible
 4. 180 bug
