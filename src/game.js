@@ -15,7 +15,7 @@ export default class SnakeContainer extends React.Component
       delay: props.delay,
       board: [],
       moveInterval: null,
-      currentDirection: null
+      currentDirection: 'right'
     };
     this.moveSet = {
       left: () => this.handleMove(Snake.head.position.row, Snake.head.position.column - 1),
@@ -42,8 +42,8 @@ export default class SnakeContainer extends React.Component
       down: ['left', 'right']
     };
 
-    // todo: ignore moving backwards    
-    document.onkeydown = (e) => {
+    // todo: backwards bug caused by moving 2 directions before time interval. 
+    document.onkeydown = e => {
       if(validMoves[this.state.currentDirection].includes(keyHash[e.keyCode])) {
         this.state.currentDirection = keyHash[e.keyCode];
       }
@@ -54,40 +54,41 @@ export default class SnakeContainer extends React.Component
     if(row < 0 || column < 0 || row >= this.state.height || column >= this.state.width) {
       alert('crashed!');
       this.resetGame();      
-    } else {
-      this.setSnakeHead(this.state.board, row, column);
+    } else {      
+      this.setSnake(this.state.board, Snake.head, { row, column });
       this.setState({ board: this.state.board });
     }    
   }
 
   buildBoard() {
     const board = [...Array(this.state.height)].map((_, i) => this.buildRow());
-    this.setSnakeHead(board);
+    this.setSnake(board, Snake.head, { row: 2, column: 3 });
     this.setState({ board });
   }
 
   buildRow() {    
-    return [...Array(this.state.width)].map((_, i) => {
-      return { occupant: false };
-    });
+    return [...Array(this.state.width)].map((_, i) => ({ occupant: false }) );
   }
-
-  setSnakeHead(board, row = 0, column = 0) {
-    // previous position becomes tail
-    const previousRow = Snake.head.position.row || 0;
-    const previousColumn = Snake.head.position.column || 0;    
-    board[previousRow][previousColumn].occupant = Snake.next;
-    
-    board[row][column].occupant = Snake.head;
-    Snake.head.position = { row, column };
+  
+  setSnake(board, snakeSegment, newPosition) {        
+    const previousPosition = snakeSegment.position;    
+    board[newPosition.row][newPosition.column].occupant = snakeSegment;
+    snakeSegment.position = newPosition;
+    if (snakeSegment.next) {
+      this.setSnake(board, snakeSegment.next, previousPosition);
+    } else {
+      board[previousPosition.row][previousPosition.column].occupant = null;
+    }
   }
 
   resetGame() {
+    Snake.resetSnake();
     this.buildBoard();
     // todo: randomize food, reset score etc
     clearInterval(this.state.moveInterval);
   }
 
+  // todo: disable start button to prevent double interval
   startGame() {
     this.state.currentDirection = 'right';
     this.state.moveInterval = setInterval(() => {

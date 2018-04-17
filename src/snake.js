@@ -1,20 +1,38 @@
 'use strict';
 
-// some sort of linked list
-
-const head = {
-  previous: null,
-  // next: tail
+const tail = {
   next: null,
   position: {
-    row: null,
-    column: null
+    row: 0,
+    column: 2
   }
 };
 
-const tail = {
-  previous: head,
-  next: null
+const body = {
+  next: tail,
+  position: {
+    row: 1,
+    column: 2
+  }
 };
 
-export const Snake = { head };
+const head = {
+  next: body,
+  position: {
+    row: 2,
+    column: 2
+  }
+};
+
+export const Snake = { 
+  head,
+  resetSnake: function() {
+    this.head = {      
+      next: null,
+      position: {
+        row: 2,
+        column: 2
+      }
+    }
+  }
+};
