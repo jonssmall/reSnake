@@ -60,11 +60,25 @@ export default class SnakeContainer extends React.Component
   handleMove(row, column) {
     if(row < 0 || column < 0 || row >= this.state.height || column >= this.state.width) {
       alert('crashed!');
-      this.resetGame();      
-    } else {      
+      this.resetGame();
+      // todo: this can be easier to read.      
+    } else if(this.state.board[row][column].occupant && this.state.board[row][column].occupant.food) {      
+      // todo: abstract to function
+      const newHead = {
+        tail: Snake.head,
+        position: {
+          row,
+          column
+        }
+      };
+      Snake.head = newHead;
+      const board = this.state.board;
+      this.placeFood(board);
+      this.setState({ board });
+    } else {
       this.setSnake(this.state.board, Snake.head, { row, column });
       this.setState({ board: this.state.board });
-    }    
+    }
   }
 
   buildBoard() {
